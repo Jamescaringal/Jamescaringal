@@ -34,7 +34,7 @@ function Nav({ view, setView, theme, setTheme, search, setSearch, isAdmin, admin
     <nav className="glass sticky top-0 z-40 border-b" style={{borderColor:"var(--border)", paddingTop:"env(safe-area-inset-top,0px)"}}>
       <div className="max-w-6xl mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
         <button onClick={()=>setView("home")} className="disp text-xl font-bold flex items-center gap-2 shrink-0">
-          <span style={{color:"var(--accent)"}}>◆</span> Depot
+          <span style={{color:"var(--accent)"}}>◆</span> James Hub
         </button>
         <div className="flex-1 min-w-[160px] relative">
           <input value={search} onChange={e=>{setSearch(e.target.value); setView("browse")}}
@@ -154,7 +154,7 @@ function Login({ onSuccess, notify }){
     <div className="max-w-sm mx-auto px-4 py-16 fade-in">
       <div className="card p-7">
         <h2 className="disp text-2xl font-bold mb-1">Admin sign in</h2>
-        <p className="text-sm opacity-60 mb-5">Manage uploads for Depot.</p>
+        <p className="text-sm opacity-60 mb-5">Manage uploads for James Hub.</p>
         <form onSubmit={submit} className="flex flex-col gap-3">
           <input value={u} onChange={e=>setU(e.target.value)} placeholder="Username" className="px-3 py-2.5 rounded-lg text-sm"/>
           <input type="password" value={p} onChange={e=>setP(e.target.value)} placeholder="Password" className="px-3 py-2.5 rounded-lg text-sm"/>
@@ -184,6 +184,109 @@ function Dashboard({ posts, notify, reload }){
       let fileMeta = {};
       if(file) fileMeta = { fileUrl: await readAsDataURL(file), fileName: file.name, fileSize: file.size };
       let thumbMeta = {};
+      if(thumb) thumbMeta = { thumbUrl: await readAsDataURL(thumb) };
+      const id = editingId || ("p_"+Date.now());
+      const existing = posts.find(p=>p.id===id) || {};
+      store.upsert({
+        ...existing, id, title: form.title, description: form.description, category: form.category,
+        uploadDate: existing.uploadDate || Date.now(), ...fileMeta, ...thumbMeta
+      });
+      notify(editingId ? "Post updated." : "Post published.");
+      reset(); reload();
+    }catch(err){ notify("Something went wrong publishing this — the browser's storage may be full.","error"); }
+    setBusy(false);
+  };
+
+  const edit = p => { setEditingId(p.id); setForm({title:p.title, description:p.description, category:p.category}); window.scrollTo({top:0,behavior:"smooth"}); };
+  const del = p => {
+    if(!confirm("Delete \""+p.title+"\"?")) return;
+    store.remove(p.id); notify("Post deleted."); reload();
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-8 fade-in">
+      <h2 className="disp text-2xl font-bold mb-5">{editingId ? "Edit post" : "Upload a new post"}</h2>
+      <div className="card p-6 flex flex-col gap-3 mb-10">
+        <input value={form.title} onChange={e=>setForm({...form,title:e.target.value})} placeholder="Title" className="px-3 py-2.5 rounded-lg text-sm"/>
+        <textarea value={form.description} onChange={e=>setForm({...form,description:e.target.value})} placeholder="Description" rows="3" className="px-3 py-2.5 rounded-lg text-sm"/>
+        <select value={form.category} onChange={e=>setForm({...form,category:e.target.value})} className="px-3 py-2.5 rounded-lg text-sm">
+          {CATS.map(c=><option key={c}>{c}</option>)}
+        </select>
+        <label className="text-xs opacity-60">Thumbnail (image, optional)</label>
+        <input type="file" accept="image/*" onChange={e=>setThumb(e.target.files[0])} className="text-sm"/>
+        <label className="text-xs opacity-60">{editingId ? "Replace file (optional)" : "File (APK, ZIP, image, video…)"}</label>
+        <input type="file" onChange={e=>setFile(e.target.files[0])} className="text-sm"/>
+        <div className="flex gap-2 mt-2">
+          <button onClick={publish} disabled={busy} className="btn px-5 py-2.5 flex items-center gap-2" style={{background:"var(--accent)",color:"#1c1e22"}}>
+            {busy && <span className="spin">⟳</span>} {editingId ? "Save changes" : "Publish post"}
+          </button>
+          {editingId && <button onClick={reset} className="btn px-4 py-2.5 opacity-70">Cancel</button>}
+        </div>
+      </div>
+
+      <h2 className="disp text-lg font-bold mb-4">All posts ({posts.length})</h2>
+      <div className="flex flex-col gap-3">
+        {posts.map(p => (
+          <div key={p.id} className="card p-4 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-lg shrink-0 flex items-center justify-center text-xl" style={{background:"var(--surface2)"}}>
+              {p.thumbUrl ? <img src={p.thumbUrl} className="w-full h-full object-cover rounded-lg"/> : "📦"}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold truncate">{p.title}</div>
+              <div className="text-xs opacity-60">{p.category} · {fmtSize(p.fileSize)}</div>
+            </div>
+            <button onClick={()=>edit(p)} className="btn px-3 py-1.5 text-sm opacity-80">Edit</button>
+            <button onClick={()=>del(p)} className="btn px-3 py-1.5 text-sm text-red-400">Delete</button>
+          </div>
+        ))}
+        {posts.length===0 && <Empty text="No posts yet — publish your first one above." />}
+      </div>
+    </div>
+  );
+}
+
+function App(){
+  const [view, setView] = useState("home");
+  const [theme, setTheme] = useState(localStorage.getItem("depot-theme") || "dark");
+  const [posts, setPosts] = useState([]);
+  const [search, setSearch] = useState("");
+  const [cat, setCat] = useState("All");
+  const [openPost, setOpenPost] = useState(null);
+  const [adminSession, setAdminSession] = useState(sessionStorage.getItem("depot-admin")==="1");
+  const [toasts, setToasts] = useState([]);
+
+  const notify = (msg, kind="ok") => {
+    const id = Date.now()+Math.random();
+    setToasts(t=>[...t,{id,msg,kind}]);
+    setTimeout(()=>setToasts(t=>t.filter(x=>x.id!==id)), 3200);
+  };
+
+  const load = () => setPosts(store.list().sort((a,b)=>b.uploadDate-a.uploadDate));
+  useEffect(load, []);
+
+  useEffect(()=>{
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("depot-theme", theme);
+  }, [theme]);
+
+  const onLoginSuccess = () => { sessionStorage.setItem("depot-admin","1"); setAdminSession(true); setView("dashboard"); notify("Signed in."); };
+
+  return (
+    <>
+      <Toast toasts={toasts} />
+      <Nav view={view} setView={setView} theme={theme} setTheme={setTheme} search={search} setSearch={setSearch} isAdmin={true} adminSession={adminSession} setAdminSession={setAdminSession} />
+      {view==="home" && <Home posts={posts} onOpen={setOpenPost} setView={setView} />}
+      {view==="browse" && <Browse posts={posts} search={search} setSearch={setSearch} cat={cat} setCat={setCat} onOpen={setOpenPost} />}
+      {view==="login" && <Login onSuccess={onLoginSuccess} notify={notify} />}
+      {view==="dashboard" && adminSession && <Dashboard posts={posts} notify={notify} reload={load} />}
+      <Details post={openPost} onClose={()=>setOpenPost(null)} />
+      <footer className="text-center text-xs opacity-40 py-10">James Hub — built for quick, organized file sharing.</footer>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("app")).render(<App />);
+ {};
       if(thumb) thumbMeta = { thumbUrl: await readAsDataURL(thumb) };
       const id = editingId || ("p_"+Date.now());
       const existing = posts.find(p=>p.id===id) || {};
