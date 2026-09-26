@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>For My Love ❤️</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pink:#ff6fa5;
+    --pink-light:#ffd1e3;
+    --purple:#b18cff;
+    --purple-light:#e6d9ff;
+    --white:#fff8fb;
+    --glow: 0 0 20px rgba(255,111,165,.6);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{ -webkit-tap-highlight-color:transparent; }
+  html,body{
+    width:100%; overflow-x:hidden;
+    background:linear-gradient(160deg,var(--white),var(--pink-light) 40%,var(--purple-light));
+    font-family:'Poppins', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-weight:300;
+    color:#5a2a4a;
+    scroll-behavior:smooth;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:'Playfair Display', 'Georgia', serif;}
+  h2{
+    font-size:1.9rem;
+    font-weight:700;
+    margin-bottom:26px;
+    letter-spacing:.3px;
+    background:linear-gradient(135deg,#c2447d,var(--purple));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  p{ line-height:1.6; }
+
+  /* ---------- generic utility ---------- */
+  .section{
+    position:relative;
+    min-height:100vh;
+    padding:70px 22px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    overflow:hidden;
+  }
+  .reveal{ opacity:0; transform:translateY(36px); transition:opacity .9s cubic-bezier(.22,1,.36,1), transform .9s cubic-bezier(.22,1,.36,1); }
+  .reveal.show{ opacity:1; transform:translateY(0); }
+
+  .glass-card{
+    background:rgba(255,255,255,.55);
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    border:1px solid rgba(255,255,255,.6);
+    border-radius:24px;
+    box-shadow:0 8px 32px rgba(177,90,150,.18);
+  }
+
+  .btn{
+    position:relative;
+    border:none;
+    padding:17px 34px;
+    font-family:'Poppins', sans-serif;
+    font-weight:500;
+    font-size:1.05rem;
+    letter-spacing:.3px;
+    border-radius:50px;
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+    color:#fff;
+    box-shadow:0 6px 24px rgba(255,111,165,.45), 0 0 0 rgba(255,111,165,0);
+    cursor:pointer;
+    touch-action:manipulation;
+    overflow:hidden;
+    transition:transform .28s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease;
+    animation:btnGlow 2.6s ease-in-out infinite;
+  }
+  .btn::after{
+    content:""; position:absolute; inset:0; border-radius:50px;
+    background:linear-gradient(120deg, transparent 30%, rgba(255,255,255,.55) 50%, transparent 70%);
+    background-size:200% 100%; background-position:150% 0;
+    transition:background-position .8s ease;
+  }
+  .btn:hover::after, .btn:active::after{ background-position:-50% 0; }
+  @keyframes btnGlow{
+    0%,100%{ box-shadow:0 6px 24px rgba(255,111,165,.45); }
+    50%{ box-shadow:0 6px 32px rgba(177,140,255,.6); }
+  }
+  .btn:active{transform:scale(.94);}
+
+  /* ---------- floating hearts / petals / sparkles layer ---------- */
+  .fx-layer{
+    position:fixed; inset:0; pointer-events:none; z-index:5; overflow:hidden;
+  }
+  .fx{
+    position:absolute; top:110%; opacity:.85;
+    animation:floatUp linear forwards;
+  }
+  @keyframes floatUp{
+    to{ transform:translateY(-120vh) rotate(360deg); opacity:0;}
+  }
+
+  /* ---------- OPENING SCREEN ---------- */
+  #opening{
+    background:radial-gradient(circle at 50% 40%, #ffe0ee, var(--pink-light) 60%, var(--purple-light));
+    z-index:20;
+    position:fixed; inset:0;
+    width:100%; height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:40px 24px;
+    padding-top:calc(40px + env(safe-area-inset-top,0px));
+    padding-bottom:calc(40px + env(safe-area-inset-bottom,0px));
+    transition:opacity .9s cubic-bezier(.22,1,.36,1), visibility .9s ease, transform .9s cubic-bezier(.22,1,.36,1);
+  }
+  #opening.hide{ opacity:0; visibility:hidden; pointer-events:none; transform:scale(1.05); }
+  .glow-heart{
+    width:120px; height:120px; position:relative; margin:0 auto 30px;
+    animation:pulse 1.6s ease-in-out infinite;
+  }
+  .glow-heart::before, .glow-heart::after{
+    content:""; position:absolute; width:60px; height:96px; background:var(--pink);
+    border-radius:50px 50px 0 0; top:0;
+    box-shadow:0 0 40px 10px rgba(255,111,165,.7);
+  }
+  .glow-heart::before{ left:60px; transform:rotate(-45deg); transform-origin:0 100%;}
+  .glow-heart::after{ left:0; transform:rotate(45deg); transform-origin:100% 100%;}
+  @keyframes pulse{
+    0%,100%{ transform:scale(1);}
+    50%{ transform:scale(1.12);}
+  }
+  #opening h1{
+    font-size:1.7rem; font-weight:600; font-style:italic;
+    max-width:320px; width:100%; margin:0 auto 12px;
+    color:#7a2f5a; line-height:1.45;
+  }
+  #opening .from-line{
+    font-family:'Poppins', sans-serif; font-size:.95rem; font-weight:400;
+    color:#a15b86; margin-bottom:34px; letter-spacing:.5px;
+  }
+
+  /* ---------- PHOTO SECTION ---------- */
+  .photo-frame{
+    position:relative; width:250px; height:250px; margin:30px auto;
+  }
+  .photo-frame::before{
+    content:""; position:absolute; inset:-16px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,111,165,.35), transparent 70%);
+    filter:blur(6px);
+    animation:ringPulse 4s ease-in-out infinite;
+  }
+  @keyframes ringPulse{
+    0%,100%{ transform:scale(1); opacity:.7; }
+    50%{ transform:scale(1.12); opacity:1; }
+  }
+  .heart-photo{
+    width:100%; height:100%; position:relative;
+    background:#eee url('girlfriend.jpg') center/cover no-repeat; /* REPLACE: girlfriend.jpg with her photo */
+    clip-path: path('M120,220 C20,150 0,90 40,50 C70,20 110,30 120,70 C130,30 170,20 200,50 C240,90 220,150 120,220 Z');
+    box-shadow:0 0 40px 12px rgba(255,111,165,.55);
+    animation: zoomPulse 5s cubic-bezier(.45,0,.55,1) infinite;
+  }
+  @keyframes zoomPulse{
+    0%,100%{ transform:scale(1);}
+    50%{ transform:scale(1.07);}
+  }
+  .sparkle-deco{ position:absolute; font-size:1.4rem; animation:twinkle 2s ease-in-out infinite; }
+  .sparkle-deco.s1{ top:-10px; left:-10px; animation-delay:.2s;}
+  .sparkle-deco.s2{ top:10px; right:-20px; animation-delay:.6s;}
+  .sparkle-deco.s3{ bottom:-15px; left:20px; animation-delay:1s;}
+  @keyframes twinkle{ 0%,100%{opacity:.3; transform:scale(.8);} 50%{opacity:1; transform:scale(1.2);} }
+
+  /* ---------- FLOWERS ---------- */
+  .flower-row{ display:flex; gap:18px; flex-wrap:wrap; justify-content:center; margin-top:20px;}
+  .flower{
+    width:70px; height:70px; position:relative; cursor:pointer;
+    animation:bloom 1.2s ease forwards;
+    transform:scale(0);
+  }
+  .flower:nth-child(1){animation-delay:.1s;}
+  .flower:nth-child(2){animation-delay:.3s;}
+  .flower:nth-child(3){animation-delay:.5s;}
+  .flower:nth-child(4){animation-delay:.7s;}
+  @keyframes bloom{ to{ transform:scale(1);} }
+  .petal{
+    position:absolute; width:26px; height:36px; background:var(--pink);
+    border-radius:50% 50% 50% 0; top:17px; left:22px;
+    box-shadow:inset 0 0 6px rgba(255,255,255,.5);
+  }
+  .petal:nth-child(1){transform:rotate(0deg) translateY(-18px);}
+  .petal:nth-child(2){transform:rotate(72deg) translateY(-18px);}
+  .petal:nth-child(3){transform:rotate(144deg) translateY(-18px);}
+  .petal:nth-child(4){transform:rotate(216deg) translateY(-18px);}
+  .petal:nth-child(5){transform:rotate(288deg) translateY(-18px);}
+  .flower-center{
+    position:absolute; width:18px; height:18px; background:#ffd76b; border-radius:50%;
+    top:26px; left:26px; box-shadow:0 0 8px #ffd76b;
+  }
+  .flower.pop .petal{ animation:petalPop .6s ease; }
+  @keyframes petalPop{ 50%{ transform: scale(1.4) rotate(var(--r,0deg)) translateY(-24px);} }
+
+  /* falling petals background */
+  .petal-fall{
+    position:absolute; width:14px; height:18px; background:var(--pink);
+    border-radius:50% 50% 50% 0; opacity:.7; top:-30px;
+    animation:petalFall linear forwards;
+  }
+  @keyframes petalFall{
+    to{ transform:translateY(110vh) rotate(300deg); opacity:0; }
+  }
+
+  /* ---------- LOVE LETTER ---------- */
+  .letter-box{
+    background:rgba(255,255,255,.85);
+    border-radius:20px;
+    padding:30px 24px;
+    max-width:420px;
+    box-shadow:0 0 30px rgba(177,140,255,.4);
+    text-align:left;
+    font-size:1.05rem;
+    line-height:1.7;
+    min-height:220px;
+    white-space:pre-wrap;
+    display:none;
+  }
+  .cursor{ display:inline-block; width:2px; background:#7a2f5a; animation:blink 1s step-end infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+
+  /* ---------- MUSIC PLAYER ---------- */
+  .music-bar{
+    position:fixed; bottom:calc(16px + env(safe-area-inset-bottom,0px)); left:50%; transform:translateX(-50%);
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.7);
+    border-radius:40px; padding:10px 20px;
+    display:flex; align-items:center; gap:10px; box-shadow:0 6px 24px rgba(177,140,255,.35);
+    z-index:30;
+    transition:transform .25s ease;
+  }
+  .music-bar button{ transition:transform .2s ease; }
+  .music-bar button:active{ transform:scale(.85); }
+  .viz{ display:flex; gap:3px; align-items:flex-end; height:18px; }
+  .viz span{ width:3px; background:var(--pink); animation:bar 1s ease-in-out infinite; }
+  .viz span:nth-child(2){ animation-delay:.15s; }
+  .viz span:nth-child(3){ animation-delay:.3s; }
+  .viz span:nth-child(4){ animation-delay:.45s; }
+  @keyframes bar{ 0%,100%{ height:4px;} 50%{ height:18px;} }
+  .music-bar button{ background:none; border:none; font-size:1.2rem; cursor:pointer; }
+
+  /* ---------- MEMORIES ---------- */
+  .memories-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:16px; max-width:420px; width:100%;
+  }
+  .mem-card{
+    background:#fff; border-radius:16px; overflow:hidden; box-shadow:0 4px 18px rgba(255,111,165,.3);
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease;
+  }
+  .mem-card:active{ transform:scale(.95); box-shadow:0 2px 10px rgba(255,111,165,.25); }
+  .mem-card img{ width:100%; height:120px; object-fit:cover; display:block; }
+  .mem-card p{ font-size:.85rem; padding:8px; color:#7a2f5a; }
+
+  /* ---------- REASONS ---------- */
+  .reasons-list{ display:flex; flex-direction:column; gap:14px; max-width:400px; width:100%; }
+  .reason-card{
+    background:#fff; border-radius:14px; padding:16px 20px; box-shadow:0 0 14px rgba(177,140,255,.3);
+    opacity:0; transform:translateY(30px);
+    transition:opacity .6s ease, transform .6s ease;
+  }
+  .reason-card.show{ opacity:1; transform:translateY(0); }
+
+  /* ---------- INTERACTIVE HEART ---------- */
+  .big-heart{
+    width:140px; height:140px; position:relative; cursor:pointer; margin:20px auto;
+    transition:transform .15s ease;
+  }
+  .big-heart::before, .big-heart::after{
+    content:""; position:absolute; width:70px; height:112px; background:linear-gradient(135deg,var(--pink),var(--purple));
+    border-radius:60px 60px 0 0; top:0; box-shadow:var(--glow);
+  }
+  .big-heart::before{ left:70px; transform:rotate(-45deg); transform-origin:0 100%;}
+  .big-heart::after{ left:0; transform:rotate(45deg); transform-origin:100% 100%;}
+  .big-heart.tap{ transform:scale(1.2); }
+  #heart-msg{ margin-top:16px; min-height:24px; font-weight:bold; color:#7a2f5a; }
+
+  /* ---------- FINAL SURPRISE ---------- */
+  #finalOverlay{
+    position:fixed; inset:0; background:rgba(30,0,20,.85); z-index:50;
+    display:none; align-items:center; justify-content:center; flex-direction:column; text-align:center; padding:30px;
+  }
+  #finalOverlay .glow-heart{ margin-bottom:20px; }
+  #finalOverlay p{ color:#fff; font-size:1.2rem; max-width:380px; line-height:1.7; }
+  #finalOverlay button.close{ margin-top:24px; background:none; border:1px solid #fff; color:#fff; padding:10px 20px; border-radius:30px; }
+
+  footer{ padding:30px; text-align:center; font-size:.85rem; color:#a17;}
+</style>
+</head>
+<body>
+
+<!-- ================= FX LAYER (hearts, sparkles, petals) ================= -->
+<div class="fx-layer" id="fxLayer"></div>
+
+<!-- ================= 1. OPENING SCREEN ================= -->
+<div id="opening">
+  <div class="glow-heart"></div>
+  <h1>For the most special person in my life ❤️</h1>
+  <div class="from-line">— James</div>
+  <button class="btn" id="openBtn">Open My Heart 💗</button>
+</div>
+
+<!-- ================= 2. PHOTO SECTION ================= -->
+<section class="section reveal" id="photoSection">
+  <h2>My Love ❤️</h2>
+  <div class="photo-frame">
+    <div class="heart-photo"></div>
+    <div class="sparkle-deco s1">✨</div>
+    <div class="sparkle-deco s2">💖</div>
+    <div class="sparkle-deco s3">🌸</div>
+  </div>
+  <p>Every time I look at you, my heart smiles.</p>
+</section>
+
+<!-- ================= 3. FLOWERS ================= -->
+<section class="section reveal" id="flowerSection">
+  <h2>Flowers for You 🌹</h2>
+  <div class="flower-row" id="flowerRow">
+    <div class="flower"><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="flower-center"></div></div>
+    <div class="flower"><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="flower-center"></div></div>
+    <div class="flower"><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="flower-center"></div></div>
+    <div class="flower"><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="petal"></div><div class="flower-center"></div></div>
+  </div>
+  <p style="margin-top:16px;">Tap a flower to make it bloom ✨</p>
+</section>
+
+<!-- ================= 4. LOVE LETTER ================= -->
+<section class="section reveal" id="letterSection">
+  <h2>A Letter for You</h2>
+  <button class="btn" id="letterBtn">Read My Letter 💌</button>
+  <div class="letter-box" id="letterBox"></div>
+</section>
+
+<!-- ================= 7. MEMORIES ================= -->
+<section class="section reveal" id="memSection">
+  <h2>Our Memories 📸</h2>
+  <div class="memories-grid">
+    <!-- REPLACE photo1.jpg - photo4.jpg with your real photos -->
+    <div class="mem-card"><img src="photo1.jpg" alt="memory 1"><p>So cute 🥹💕</p></div>
+    <div class="mem-card"><img src="photo2.jpg" alt="memory 2"><p>My favorite person 😍💗</p></div>
+    <div class="mem-card"><img src="photo3.jpg" alt="memory 3"><p>Hi ganda 😘✨</p></div>
+    <div class="mem-card"><img src="photo4.jpg" alt="memory 4"><p>I love you so much 🥰❤️</p></div>
+  </div>
+</section>
+
+<!-- ================= 8. REASONS I LOVE YOU ================= -->
+<section class="section" id="reasonSection">
+  <h2>Reasons I Love You 💕</h2>
+  <div class="reasons-list" id="reasonsList">
+    <div class="reason-card">Your smile 😊</div>
+    <div class="reason-card">Your kindness 💗</div>
+    <div class="reason-card">The way you make me happy</div>
+    <div class="reason-card">Your beautiful personality</div>
+    <div class="reason-card">Every little thing about you</div>
+  </div>
+</section>
+
+<!-- ================= 9. INTERACTIVE HEART ================= -->
+<section class="section reveal" id="heartSection">
+  <div class="big-heart" id="bigHeart"></div>
+  <p>Tap the heart ❤️</p>
+  <div id="heart-msg"></div>
+</section>
+
+<!-- ================= 10. FINAL SURPRISE ================= -->
+<section class="section reveal" id="finalSection">
+  <h2>One last surprise…</h2>
+  <button class="btn" id="finalBtn">Click Me 💝</button>
+</section>
+
+<div id="finalOverlay">
+  <div class="glow-heart"></div>
+  <p>You are one of the most beautiful parts of my life. ❤️<br>
+     Thank you for being you.<br>
+     I love you, always and forever. 💕</p>
+  <button class="close" id="closeFinal">Close</button>
+</div>
+
+<footer>Made with ❤️ just for you</footer>
+
+<!-- ================= MUSIC PLAYER ================= -->
+<div class="music-bar">
+  <button id="musicToggle">🎵</button>
+  <div class="viz" id="viz"><span></span><span></span><span></span><span></span></div>
+  <span style="font-size:.8rem;">Our Song</span>
+</div>
+<!-- REPLACE music.mp3 with your song file -->
+<audio id="bgMusic" src="music.mp3" loop></audio>
+
+<script>
+/* =================== CONFIG: EDIT THESE =================== */
+const YOUR_NAME = "James"; // <-- change this if needed
+const LOVE_LETTER =
+`Hi love ❤️
+
+I just want you to know how special you are to me. Every moment with you becomes a memory that I want to keep forever. You make my ordinary days feel more beautiful just by being there.
+
+I may not always know the perfect words to say, but I hope you always remember that you are important to me. Thank you for being someone who makes my heart smile.
+
+I love you more than words can explain. ❤️
+
+Forever yours,
+${YOUR_NAME}`;
+
+/* =================== FX HELPERS =================== */
+const fxLayer = document.getElementById('fxLayer');
+function spawnFX(symbol, count, duration){
+  for(let i=0;i<count;i++){
+    setTimeout(()=>{
+      const el = document.createElement('div');
+      el.className='fx';
+      el.textContent = symbol;
+      el.style.left = Math.random()*100+'vw';
+      el.style.fontSize = (14+Math.random()*20)+'px';
+      el.style.animationDuration = (duration||4+Math.random()*3)+'s';
+      fxLayer.appendChild(el);
+      setTimeout(()=>el.remove(), (duration||7)*1000+200);
+    }, i*80);
+  }
+}
+function ambientLoop(){
+  spawnFX(['❤️','💕','✨'][Math.floor(Math.random()*3)],1,6);
+  setTimeout(ambientLoop, 900);
+}
+ambientLoop();
+
+function spawnPetals(count){
+  for(let i=0;i<count;i++){
+    setTimeout(()=>{
+      const p = document.createElement('div');
+      p.className='petal-fall';
+      p.style.left = Math.random()*100+'vw';
+      p.style.animationDuration = (4+Math.random()*3)+'s';
+      fxLayer.appendChild(p);
+      setTimeout(()=>p.remove(), 7500);
+    }, i*150);
+  }
+}
+setInterval(()=>spawnPetals(2), 1200);
+
+/* =================== 1. OPENING =================== */
+const opening = document.getElementById('opening');
+const openBtn = document.getElementById('openBtn');
+const bgMusic = document.getElementById('bgMusic');
+openBtn.addEventListener('click', ()=>{
+  opening.classList.add('hide');
+  spawnFX('💖',30,3);
+  bgMusic.play().catch(()=>{ /* autoplay blocked, user can press music button */ });
+  updateMusicUI();
+});
+
+/* =================== 3. FLOWERS =================== */
+document.querySelectorAll('.flower').forEach(f=>{
+  f.addEventListener('click', ()=>{
+    f.classList.add('pop');
+    spawnFX('✨',10,2);
+    spawnFX('❤️',6,2.5);
+    setTimeout(()=>f.classList.remove('pop'), 650);
+  });
+});
+
+/* =================== 4. LOVE LETTER (typewriter) =================== */
+const letterBtn = document.getElementById('letterBtn');
+const letterBox = document.getElementById('letterBox');
+let typed = false;
+letterBtn.addEventListener('click', ()=>{
+  letterBox.style.display='block';
+  if(typed) return;
+  typed = true;
+  letterBox.innerHTML = '';
+  const cursor = document.createElement('span');
+  cursor.className='cursor';
+  cursor.textContent='\u00A0';
+  let i = 0;
+  function typeChar(){
+    if(i < LOVE_LETTER.length){
+      const textNode = document.createTextNode(LOVE_LETTER.charAt(i));
+      letterBox.insertBefore(textNode, cursor);
+      i++;
+      setTimeout(typeChar, 28);
+    } else {
+      cursor.remove();
+      spawnFX('❤️',25,4);
+      spawnFX('✨',15,3);
+    }
+  }
+  letterBox.appendChild(cursor);
+  typeChar();
+});
+
+/* =================== 5. MUSIC =================== */
+const musicToggle = document.getElementById('musicToggle');
+const viz = document.getElementById('viz');
+function updateMusicUI(){
+  if(bgMusic.paused){
+    musicToggle.textContent='🎵';
+    viz.style.opacity=.3;
+  } else {
+    musicToggle.textContent='⏸️';
+    viz.style.opacity=1;
+  }
+}
+musicToggle.addEventListener('click', ()=>{
+  if(bgMusic.paused){ bgMusic.play().catch(()=>{}); }
+  else { bgMusic.pause(); }
+  updateMusicUI();
+});
+updateMusicUI();
+
+/* =================== SCROLL REVEAL (sections + reason cards) =================== */
+const revealTargets = document.querySelectorAll('.reveal, .reason-card');
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('show');
+    }
+  });
+},{threshold:.2});
+revealTargets.forEach(c=>observer.observe(c));
+
+/* =================== 9. INTERACTIVE HEART =================== */
+const bigHeart = document.getElementById('bigHeart');
+const heartMsg = document.getElementById('heart-msg');
+const messages = [
+  "I'm lucky to have you ❤️",
+  "You make my heart happy 💕",
+  "I love you! 🥰",
+  "You're my favorite person 💗"
+];
+bigHeart.addEventListener('click', ()=>{
+  bigHeart.classList.add('tap');
+  setTimeout(()=>bigHeart.classList.remove('tap'), 200);
+  spawnFX('❤️',12,2.5);
+  heartMsg.textContent = messages[Math.floor(Math.random()*messages.length)];
+});
+
+/* =================== 10. FINAL SURPRISE =================== */
+const finalBtn = document.getElementById('finalBtn');
+const finalOverlay = document.getElementById('finalOverlay');
+const closeFinal = document.getElementById('closeFinal');
+finalBtn.addEventListener('click', ()=>{
+  finalOverlay.style.display='flex';
+  spawnFX('❤️',60,5);
+  spawnFX('💕',40,5.5);
+  spawnPetals(30);
+});
+closeFinal.addEventListener('click', ()=>{
+  finalOverlay.style.display='none';
+});
+</script>
+</body>
+</html>
